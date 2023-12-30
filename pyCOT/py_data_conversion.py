@@ -21,20 +21,5 @@ from itertools import combinations
 from Displays import *
 from pyCOT_relational_properties import *
 
-# Function that returns bitarray from vector represntation    
-def BttoVec(bt):
-    vec=[]
-    for i in range(len(bt)):
-        if bt[i]==1:
-            vec.append(i)
-    
-    return vec
+# Function that returns bitarray from vector representation    
 
-# Function that returns bitarray from vector represntation    
-def VectoBt(vec,size):
-    btarray=bt(size)
-    btarray.setall(0)
-    for i in ind:
-       btarray[i]=1
-
-    return btarray
