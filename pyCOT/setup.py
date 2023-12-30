@@ -32,5 +32,6 @@ setup(
 
     # run-time dependencies that will be installed by pip
     # install_requires=['numpy','pandas','beautifulsoup4', 'bitarray','scipy','networkx','libroadrunner','lxml','pyvis','pypoman','matplotlib', 'joblib']
+    # GH: Below pypoman does not appear among the [].
     install_requires=['numpy','pandas','beautifulsoup4', 'bitarray','scipy','networkx','libroadrunner','lxml','pyvis','matplotlib','joblib','pulp','seaborn']
 )
