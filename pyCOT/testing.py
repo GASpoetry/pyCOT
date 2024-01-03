@@ -11,6 +11,8 @@ Created on Wed Dec 27 15:28:44 2023
 from pyCOT_constructor import *
 import networkx as nx
 from File_manipulation import *
+from bitarray import bitarray as bt
+import numpy as np
 
 # Create an instance of the HelloWorld class
 SpStr= ['a', 'b', 'c', 'd']  # Default: ['a', 'b', 'c', 'd']
