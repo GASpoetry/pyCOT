@@ -64,5 +64,29 @@ print("species_from_bt")
 # print("reactions_from_species")
 # print(testRN2.get_reactions_from_species(['l']))
 
-print("is_closed")
-print(testRN2.is_closed(['s1','l']))
+# print("get prod from reactions")
+# print(testRN2.get_prod_from_reactions(['R3','R2']))
+# print("get supp from reactions")
+# print(testRN2.get_supp_from_reactions(['R3','R1','R7']))
+file_path = '../networks/autopoietic_ext2.txt'
+testRN2 = load_pyCOT_from_file(file_path)
+print("get connected species to species")
+print(testRN2.get_connected_species_to_species(['s2','x']))
+
+# print("get directly connected species to species")
+# print(testRN2.get_immediately_connected_species_to_species(['s2','x']))
+print("get forward connected species to species")
+print(testRN2.get_forward_connected_species_to_species(['d','y']))
+# print("get reactions consuming")
+# print(testRN2.get_reactions_consuming_species('s1'))
+
+# print("get reactions producing")
+# print(testRN2.get_reactions_producing_species('s1'))
+
+# print("is_closed")
+# print(testRN2.is_closed(['s1','s2']))
+# print("is_semi_self_maintaining")
+# print(testRN2.is_semi_self_maintaining(['d','s1']))
+
+# print("is_simple_connected_directly")
+# print(testRN2.is_simple_connected_directly('d','s2'))

@@ -3,6 +3,21 @@ from bitarray import bitarray as bt
 from typing import List
 
 #Created by Tomas Veloz - github.com/tveloz
+#############################################################################
+##Summary: Create/Load reaction networks and compute COT-related properties
+#############################################################################
+
+     
+      
+      
+#Table of contents:########################################################
+
+#Constructor#############################################################
+##*Vector of positions to bt transformations##############################
+##*Bt to/from species list transformations ###############################
+##*obtaining sets of species/reactions producing/consuming one another####
+##*Getting various notions of species connectivity#######################
+##*verify relational properties of species/reactions#####################
 
 class pyCOT:
     """
@@ -44,9 +59,11 @@ class pyCOT:
         self.RnBt = RnBt
         self.RnVecS = RnVecS
         self.RnVecP = RnVecP
-#############################################################################
-#############Vector of position to bt transformations#######################
-############################################################################
+        
+    #############################################################################
+    #############Vector of positions to bt transformations#######################
+    ############################################################################
+ 
     def get_id_from_bt(self, bt: bt) -> List[int]:
         """Function that returns a vector from bitarray representation."""
         vec = [i for i in range(len(bt)) if bt[i] == 1]
@@ -59,11 +76,11 @@ class pyCOT:
         for i in vec:
             bt_array[i] = 1
         return bt_array
-   
     
   #############################################################################
   #############bt From/To str representations###########################
-  ############################################################################              
+  ############################################################################
+              
     def get_bt_from_species(self, specs):
         bitarray = bt(len(self.SpStr)) 
         bitarray.setall(0)
@@ -138,7 +155,7 @@ class pyCOT:
 
     
     #############################################################################
-    ############# obtaining sets of species/reactions from one another########
+    #### obtaining sets of species/reactions producing/consuming one another#####
     ############################################################################              
     
     
@@ -179,15 +196,104 @@ class pyCOT:
                 prod=self.get_prod_bt_from_reaction(self.RnStr[i])
                 specs=specs | prod
         return self.get_species_from_bt(specs)       
+ 
     def get_prod_from_species(self,SpStr):
         reactions=self.get_reactions_from_species(SpStr)
         prod=self.get_prod_from_reactions(reactions)
         return prod
     
+    def get_reactions_consuming_species(self,SpStr):        
+        reactions_list=[]
+        for i in range(len(self.RnStr)):
+            r_supp=self.get_supp_from_reactions(self.RnStr[i])
+            if (SpStr in r_supp) | (len(r_supp)==0):
+                reactions_list.append(self.RnStr[i])
+        return(reactions_list)
+    
+    def get_reactions_producing_species(self,SpStr):        
+        reactions_list=[]
+        for i in range(len(self.RnStr)):
+            if SpStr in self.get_prod_from_reactions(self.RnStr[i]):
+                reactions_list.append(self.RnStr[i])
+        return(reactions_list)
+    
     #############################################################################
-    ############# relational properties of species/reactions#####################
+    #############Getting various notions of species connectivity##################
+    ############################################################################              
+      
+    def get_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_connected_species_to_species: input is not a list or a species string")
+        result=[]
+        while len(new)!=0:
+            supp=[]
+            prod=[]
+            reacs=[]
+            result=list(set(result).union(set(new)))
+            for i in range(len(new)):
+                r_prod=self.get_reactions_producing_species(new[i])
+                r_supp=self.get_reactions_consuming_species(new[i])
+                reacs=list(set(reacs).union(set(r_supp)))
+                reacs=list(set(reacs).union(set(r_prod)))
+            supp=self.get_supp_from_reactions(reacs)
+            prod=self.get_prod_from_reactions(reacs)
+            new=list(set(supp).union(set(new)))
+            new=list(set(prod).union(set(new)))
+            new=list(set(new)-set(result))
+        return(result)
+    
+    def get_immediately_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_directly_connected_species_to_species: input is not a list or a species string")
+        supp=[]
+        prod=[]
+        reacs=[]
+        for i in range(len(new)):
+            r_prod=self.get_reactions_producing_species(new[i])
+            r_supp=self.get_reactions_consuming_species(new[i])
+            reacs=list(set(reacs).union(set(r_supp)))
+            reacs=list(set(reacs).union(set(r_prod)))
+        supp=self.get_supp_from_reactions(reacs)
+        prod=self.get_prod_from_reactions(reacs)
+        new=list(set(supp).union(set(new)))
+        new=list(set(prod).union(set(new)))
+        return(new)
+    
+    def get_forward_connected_species_to_species(self, Spstr):
+        if isinstance(Spstr, list):
+            new=Spstr.copy()
+        elif isinstance(Spstr, str):
+            new=[Spstr]        
+        else:
+            print("Error: get_connected_species_to_species: input is not a list or a species string")
+        result=[]
+        while len(new)!=0:
+            supp=[]
+            prod=[]
+            reacs=[]
+            result=list(set(result).union(set(new)))
+            for i in range(len(new)):
+                r_supp=self.get_reactions_consuming_species(new[i])
+                reacs=list(set(reacs).union(set(r_supp)))
+            prod=self.get_prod_from_reactions(reacs)
+            new=list(set(supp).union(set(new)))
+            new=list(set(prod).union(set(new)))
+            new=list(set(new)-set(result))
+        return(result)
+    
+    #############################################################################
+    ############# verify relational properties of species/reactions#####################
     ############################################################################              
     
+            
     def is_closed(self,SpStr):
         species_bitarray = self.get_bt_from_species(SpStr)
         reactions_list=self.get_reactions_from_species(SpStr)
@@ -195,6 +301,16 @@ class pyCOT:
         prod_bitarray=self.get_bt_from_species(prod_of_reactions)
         return (prod_bitarray | species_bitarray)==species_bitarray
         
-        
-       
+    def is_semi_self_maintaining(self,SpStr):
+        species_bitarray = self.get_bt_from_species(SpStr)
+        reactions_list=self.get_reactions_from_species(SpStr)
+        prod_of_reactions=self.get_prod_from_reactions(reactions_list)
+        prod_bitarray=self.get_bt_from_species(prod_of_reactions)
+        supp_of_reactions=self.get_supp_from_reactions(reactions_list)
+        supp_bitarray=self.get_bt_from_species(supp_of_reactions)        
+        return (supp_bitarray & prod_bitarray)==supp_bitarray
+    
+    
+   
+            
     
